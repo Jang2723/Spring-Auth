@@ -2,6 +2,7 @@ package com.example.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
@@ -29,7 +30,8 @@ public class WebSecurityConfig {
                         // 어떤 경로에 대한 설정인지
                         .requestMatchers(
                                 "/no-auth",
-                                "/users/home"
+                                "/users/home",
+                                "/tests"
                         )
                         // 이 경로에 도달할 수 있는 사람에 대한 설정(모두)
                         .permitAll()
@@ -42,6 +44,7 @@ public class WebSecurityConfig {
                         .anonymous()
                         .anyRequest()
                         .authenticated()
+                        //.anyRequest().permitAll()
         )
         // html form 요소를 이용해 로그인을 시키는 설정
         .formLogin(
