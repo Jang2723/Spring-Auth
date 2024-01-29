@@ -1,5 +1,6 @@
 package com.example.auth.jwt;
 
+import com.example.auth.entity.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -47,7 +48,12 @@ public class JwtTokenUtils {
                 // iat : 언제 발급 되었는지
                 .setIssuedAt(Date.from(now))
                 // exp : 언제 만료 예정인지
-                .setExpiration(Date.from(now.plusSeconds(20L)));
+                .setExpiration(Date.from(now.plusSeconds(60 * 60 * 24 * 7)));
+
+
+     /*   if (userDetails instanceof CustomUserDetails){
+            jwtClaims.put("email",)
+        }*/
 
         jwtClaims.put("isAccountExpired", !userDetails.isAccountNonExpired());
         // 일반적인 JWT 외의 정보를 포함하고 싶다면

@@ -1,11 +1,15 @@
 package com.example.auth.config;
 
 import com.example.auth.filters.AllAuthenticatedFilter;
+import com.example.auth.jwt.JwtTokenFilter;
+import com.example.auth.jwt.JwtTokenUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +21,10 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 // @Bean을 비록해서 여러 설정을 하기 위한 Bean 객체
 @Configuration
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+    private final JwtTokenUtils jwtTokenUtils;
+    private final UserDetailsManager manager;
 
     // 메서드의 결과를 Bean 객체로 관리해주는 어노테이션
     @Bean
@@ -25,12 +32,48 @@ public class WebSecurityConfig {
             HttpSecurity http
     ) throws Exception {
         http
+                // csrf  보안 헤제
+                .csrf(AbstractHttpConfigurer::disable)
+                // url에 따른 요청 인가
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/no-auth",
+                                "/users/home",
+                                "/tests",
+                                "/token/issue",
+                                "/token/validate"
+                        )
+                        .permitAll()
+                        .requestMatchers("/users/my-profile")
+                        .authenticated()
+                        .requestMatchers(
+                                "/users/login",
+                                "/users/register"
+                        )
+                        .anonymous()
+                        .anyRequest()
+                        .permitAll()
+                )
+                // JWT를 사용하기 때문에 보안 관련 세션 헤제
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                // JWT 필터를 권한 필터 앞에 삽입
+                .addFilterBefore(
+                        new JwtTokenFilter(
+                                jwtTokenUtils,
+                                manager),
+                        AuthorizationFilter.class
+                )
+         ;
+       // JWT 이전
+        /*http
         .csrf(AbstractHttpConfigurer::disable)
             // Spring Security 5.xx version
-             /*   .authorizeHttpRequests()
-                    .requestMatchers("")
-                    .permitAll()
-                    .and()*/
+//                .authorizeHttpRequests()
+//                    .requestMatchers("")
+//                    .permitAll()
+//                    .and()
         .authorizeHttpRequests(
                 // /no-auth로 오는 요청은 모두 허가
                 auth -> auth
@@ -77,20 +120,24 @@ public class WebSecurityConfig {
                         .logoutSuccessUrl("/users/login")
         )
         // 나만의 필터를 넣는다.
+//        .addFilterBefore(
+//                new AllAuthenticatedFilter(),
+//                AuthorizationFilter.class
+//        )
         .addFilterBefore(
-                new AllAuthenticatedFilter(),
+                new JwtTokenFilter(jwtTokenUtils),
                 AuthorizationFilter.class
         )
         ;
-
+*/
         return http.build();
     }
 
-    @Bean
+  /*  @Bean
     // 비밀번호 암호화 클래스
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 
 //    @Bean
     // 사용자 정보 관리 클래스
