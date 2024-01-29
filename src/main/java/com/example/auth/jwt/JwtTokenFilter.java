@@ -22,8 +22,9 @@ import java.util.ArrayList;
 //@RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenUtils jwtTokenUtils;
-
+    // 사용자 정보를 찾기위한 UserDetailsService 또는 Manager
     private final UserDetailsManager manager;
+
     public JwtTokenFilter(
             JwtTokenUtils jwtTokenUtils,
             UserDetailsManager manager
@@ -31,6 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         this.jwtTokenUtils = jwtTokenUtils;
         this.manager = manager;
     }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -44,7 +46,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 = request.getHeader(HttpHeaders.AUTHORIZATION);
         // 2. Authorization 헤더가 존재하는지 + Bearer로 시작하는지
         if(authHeader != null&& authHeader.startsWith("Bearer ")) {
-            // authHeader = "Bearer adjflawjlkafjdlkajlekfajw...."
             String token = authHeader.split(" ")[1];
             // 3. Token 이 유효한 토큰인지
             if (jwtTokenUtils.validate(token)){

@@ -50,12 +50,7 @@ public class JwtTokenUtils {
                 // exp : 언제 만료 예정인지
                 .setExpiration(Date.from(now.plusSeconds(60 * 60 * 24 * 7)));
 
-
-     /*   if (userDetails instanceof CustomUserDetails){
-            jwtClaims.put("email",)
-        }*/
-
-        jwtClaims.put("isAccountExpired", !userDetails.isAccountNonExpired());
+        // jwtClaims.put("isAccountExpired", !userDetails.isAccountNonExpired());
         // 일반적인 JWT 외의 정보를 포함하고 싶다면
         // Map.put 사용 가능
         // jwtClaims.put("test","claim");

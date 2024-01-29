@@ -1,12 +1,11 @@
 package com.example.auth.config;
 
-import com.example.auth.filters.AllAuthenticatedFilter;
 import com.example.auth.jwt.JwtTokenFilter;
 import com.example.auth.jwt.JwtTokenUtils;
+import com.example.auth.service.JpaUserDetailsManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -62,18 +61,20 @@ public class WebSecurityConfig {
                 .addFilterBefore(
                         new JwtTokenFilter(
                                 jwtTokenUtils,
-                                manager),
+                                manager
+                        ),
                         AuthorizationFilter.class
                 )
          ;
        // JWT 이전
-        /*http
+        /*
+        http
         .csrf(AbstractHttpConfigurer::disable)
-            // Spring Security 5.xx version
-//                .authorizeHttpRequests()
-//                    .requestMatchers("")
-//                    .permitAll()
-//                    .and()
+            // Spring Security 5까지
+//        .authorizeHttpRequests()
+//                .requestMatchers("")
+//                .permitAll()
+//         .and()
         .authorizeHttpRequests(
                 // /no-auth로 오는 요청은 모두 허가
                 auth -> auth
@@ -119,17 +120,13 @@ public class WebSecurityConfig {
                         // 로그아웃 성공시 이동할 페이지
                         .logoutSuccessUrl("/users/login")
         )
-        // 나만의 필터를 넣는다.
+        // 특정 필터 앞에 나만의 필터를 넣는다.
 //        .addFilterBefore(
 //                new AllAuthenticatedFilter(),
 //                AuthorizationFilter.class
 //        )
-        .addFilterBefore(
-                new JwtTokenFilter(jwtTokenUtils),
-                AuthorizationFilter.class
-        )
-        ;
-*/
+        ;*/
+
         return http.build();
     }
 
