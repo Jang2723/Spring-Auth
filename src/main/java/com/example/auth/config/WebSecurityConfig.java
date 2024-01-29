@@ -26,6 +26,11 @@ public class WebSecurityConfig {
     ) throws Exception {
         http
         .csrf(AbstractHttpConfigurer::disable)
+            // Spring Security 5.xx version
+             /*   .authorizeHttpRequests()
+                    .requestMatchers("")
+                    .permitAll()
+                    .and()*/
         .authorizeHttpRequests(
                 // /no-auth로 오는 요청은 모두 허가
                 auth -> auth
@@ -33,7 +38,9 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/no-auth",
                                 "/users/home",
-                                "/tests"
+                                "/tests",
+                                "/token/issue",
+                                "/token/validate"
                         )
                         // 이 경로에 도달할 수 있는 사람에 대한 설정(모두)
                         .permitAll()
