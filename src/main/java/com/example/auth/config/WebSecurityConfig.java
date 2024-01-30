@@ -59,6 +59,13 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/admin-role")
                         .hasRole("ADMIN")
 
+                        // AUTHORITY에 따른 접근 설정
+                        .requestMatchers("/auth/read-authority")
+                        .hasAnyAuthority("READ_AUTHORITY","WRITE_AUTHORITY")
+
+                        .requestMatchers("/auth/write-authority")
+                        .hasAuthority("WRITE_AUTHORITY")
+
                         .anyRequest()
                         .permitAll()
                 )
