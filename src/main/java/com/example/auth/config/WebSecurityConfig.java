@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -76,6 +77,11 @@ public class WebSecurityConfig {
                         .anyRequest()
                         .permitAll()
                 )
+
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/users/login")
+                )
+
                 // JWT를 사용하기 때문에 보안 관련 세션 헤제
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
