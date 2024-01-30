@@ -10,13 +10,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 
 @Slf4j // Bean으로 등록하지 않는 이유: 수동으로 webSecurityConfig에서 등록해줘야 하는데 빈으로 등록하면 필터에 두번 등록되기 때문
 //@RequiredArgsConstructor
@@ -55,6 +58,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 String username = jwtTokenUtils
                         .parseClaims(token)
                         .getSubject();
+
+                UserDetails userDetails = manager.loadUserByUsername(username);
+                for (GrantedAuthority authority : userDetails.getAuthorities()){
+                        log.info("authorities: {}",authority.getAuthority());
+                }
                 // 인증 정보 생성
                 AbstractAuthenticationToken authenticationToken
                         = new UsernamePasswordAuthenticationToken(
