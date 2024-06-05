@@ -36,6 +36,10 @@ public class OAuth2SuccessHandler
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
+        // Extract the 'code' parameter from the request URL
+        String code = request.getParameter("code");
+        log.info("Authorization code: {}", code);
+
         // OAuth2UserServiceImpl 의 반환값이 할당된다.
         OAuth2User oAuth2User
                 = (OAuth2User) authentication.getPrincipal();
@@ -62,9 +66,10 @@ public class OAuth2SuccessHandler
                 = userDetailsManager.loadUserByUsername(username);
         // JWT 생성
         String jwt = tokenUtils.generateToken(details);
+
         // 어디로 리다이렉트 할지 지정
         String targetUrl = String.format(
-                "http://localhost:8080/token/validate?token=%s", jwt
+                "http://localhost:8080/token/validate?token=%s&code=%s", jwt , code
         );
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

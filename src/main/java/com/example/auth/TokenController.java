@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -52,14 +53,30 @@ public class TokenController {
      }
 
     @GetMapping("/validate")
-    public Claims validateToken(
-        @RequestParam("token")
-        String token
+//    public Claims validateToken(
+//        @RequestParam("token")
+//        String token,
+//        @RequestParam("code")
+//        String code
+//    ) {
+//        if (!jwtTokenUtils.validate(token))
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+//
+//        return jwtTokenUtils.parseClaims(token);
+//    }
+    public ResponseEntity<String> validateToken(
+            @RequestParam("token") String token,
+            @RequestParam("code") String code
     ) {
-        if (!jwtTokenUtils.validate(token))
+        if (!jwtTokenUtils.validate(token)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
 
-        return jwtTokenUtils.parseClaims(token);
+        Claims claims = jwtTokenUtils.parseClaims(token);
+
+        String responseMessage = String.format("Token claims: %s\n\n Code: %s", claims, code);
+
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
 }
